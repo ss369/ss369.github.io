@@ -15,9 +15,7 @@
             background-color: #f5f5f7;
             color: #1d1d1f;
         }
-        .loading-box {
-            text-align: center;
-        }
+        .loading-box { text-align: center; }
         .spinner {
             border: 3px solid rgba(0, 0, 0, 0.05);
             width: 28px;
@@ -43,22 +41,49 @@
         const email = "hzlpk2025@outlook.com"; 
         const website = "https://www.gofunseek.com/setup"; 
 
+        // 检测当前设备是否为手机/移动端
+        const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
         let hasLeft = false;
+        const startTime = Date.now();
 
-        // 1. Listen for the blur event (if the email app opens, the browser loses focus)
-        window.addEventListener('blur', function() {
-            hasLeft = true;
-        }, { once: true });
+        if (isMobile) {
+            // === 【手机端极致优化逻辑】 ===
+            
+            // 立即尝试拉起邮箱App
+            window.location.href = "mailto:" + email;
 
-        // 2. Automatically launch the email client immediately
-        window.location.href = "mailto:" + email;
+            // 手机端专用：通过计算“时间差”来判断是否成功唤起
+            setTimeout(function() {
+                const timeSpent = Date.now() - startTime;
+                
+                // 如果小于 600ms，说明浏览器一直处于前台，邮箱拉起失败（手机没装邮箱）
+                // 如果大于 600ms，说明中途浏览器被切入后台（邮箱成功打开），用户回来后不执行跳转
+                if (timeSpent < 600) {
+                    window.location.href = website;
+                }
+            }, 400);
 
-        // 3. Optimized extreme delay: Check after only 0.5 seconds (500ms)
-        setTimeout(function() {
-            if (!hasLeft) {
+        } else {
+            // === 【电脑端零延迟逻辑】 ===
+            
+            window.addEventListener('blur', function() {
+                hasLeft = true;
+            }, { once: true });
+
+            window.addEventListener('focus', function() {
+                // 电脑端点击取消，立刻秒切官网
                 window.location.href = website;
-            }
-        }, 500); 
+            }, { once: true });
+
+            window.location.href = "mailto:" + email;
+
+            setTimeout(function() {
+                if (!hasLeft) {
+                    window.location.href = website;
+                }
+            }, 500);
+        }
     </script>
 
 </body>
