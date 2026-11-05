@@ -1,12 +1,33 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Loading...</title>
-    <!-- 设置0秒自动跳转至目标网址 -->
-    <meta http-equiv="refresh" content="0;url=www.gofunseek.com">
-</head>
-<body>
-    <p>If it keeps loading，click<a href="www.gofunseek.com">here</a>。</p>
-</body>
-</html>
+<!-- HTML 按钮 -->
+<a href="#" id="email-link">content us</a>
+
+<script>
+document.getElementById('email-link').addEventListener('click', function(e) {
+    e.preventDefault(); // 阻止默认的 A 标签跳转
+
+    const email = "hzlpk2025@outlook.com"; // 你的邮箱地址
+    const website = "https://www.gofunseek.com/setup"; // 你的官网地址
+
+    let hasLeft = false;
+
+    // 监听窗口失去焦点事件（如果邮箱成功打开，浏览器通常会失去焦点）
+    window.addEventListener('blur', function() {
+        hasLeft = true;
+    }, { once: true });
+
+    // 尝试唤起邮箱
+    window.location.href = "mailto:" + email;
+
+    // 2秒后检查：如果没有成功唤起邮箱（页面没失去焦点），则跳转到官网
+    setTimeout(function() {
+        if (!hasLeft) {
+            // 如果你希望在“当前标签页”打开官网，用下面这行：
+            window.location.href = website;
+            
+            // 如果你希望在“新标签页”打开官网，用下面这两行：
+            // window.open(website, '_blank');
+            // window.location.reload(); 
+        }
+    }, 2000); // 2000毫秒 = 2秒
+});
+</script>
