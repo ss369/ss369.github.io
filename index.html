@@ -1,33 +1,65 @@
-<!-- HTML 按钮 -->
-<a href="#" id="email-link">content us</a>
-
-<script>
-document.getElementById('email-link').addEventListener('click', function(e) {
-    e.preventDefault(); // 阻止默认的 A 标签跳转
-
-    const email = "hzlpk2025@outlook.com"; // 你的邮箱地址
-    const website = "https://www.gofunseek.com/setup"; // 你的官网地址
-
-    let hasLeft = false;
-
-    // 监听窗口失去焦点事件（如果邮箱成功打开，浏览器通常会失去焦点）
-    window.addEventListener('blur', function() {
-        hasLeft = true;
-    }, { once: true });
-
-    // 尝试唤起邮箱
-    window.location.href = "mailto:" + email;
-
-    // 2秒后检查：如果没有成功唤起邮箱（页面没失去焦点），则跳转到官网
-    setTimeout(function() {
-        if (!hasLeft) {
-            // 如果你希望在“当前标签页”打开官网，用下面这行：
-            window.location.href = website;
-            
-            // 如果你希望在“新标签页”打开官网，用下面这两行：
-            // window.open(website, '_blank');
-            // window.location.reload(); 
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connecting...</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
         }
-    }, 2000); // 2000毫秒 = 2秒
-});
-</script>
+        .loading-box {
+            text-align: center;
+        }
+        .spinner {
+            border: 3px solid rgba(0, 0, 0, 0.05);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border-left-color: #0071e3;
+            animation: spin 0.6s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        p { font-size: 15px; font-weight: 500; margin: 0; }
+    </style>
+</head>
+<body>
+
+    <div class="loading-box">
+        <div class="spinner"></div>
+        <p>Connecting...</p>
+    </div>
+
+    <script>
+        // Please replace with your actual email and website address
+        const email = "hzlpk2025@outlook.com"; 
+        const website = "https://www.gofunseek.com/setup"; 
+
+        let hasLeft = false;
+
+        // 1. Listen for the blur event (if the email app opens, the browser loses focus)
+        window.addEventListener('blur', function() {
+            hasLeft = true;
+        }, { once: true });
+
+        // 2. Automatically launch the email client immediately
+        window.location.href = "mailto:" + email;
+
+        // 3. Optimized extreme delay: Check after only 0.5 seconds (500ms)
+        setTimeout(function() {
+            if (!hasLeft) {
+                window.location.href = website;
+            }
+        }, 500); 
+    </script>
+
+</body>
+</html>
