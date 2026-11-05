@@ -37,52 +37,55 @@
     </div>
 
     <script>
-        // Please replace with your actual email and website address
-        const email = "hzlpk2025@outlook.com"; 
-        const website = "https://www.gofunseek.com/setup"; 
+        const email = "example@email.com"; 
+        const website = "https://yourwebsite.com"; 
 
-        // 检测当前设备是否为手机/移动端
         const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-        let hasLeft = false;
-        const startTime = Date.now();
-
         if (isMobile) {
-            // === 【手机端极致优化逻辑】 ===
-            
-            // 立即尝试拉起邮箱App
+            // === 【手机端：微秒级事件拦截方案】 ===
+            let isAppOpening = false;
+
+            // 1. 极其灵敏地捕捉手机浏览器即将被切入后台的瞬间
+            const handleHide = function() {
+                isAppOpening = true; // 确认邮箱客户端正在打开
+            };
+            window.addEventListener('pagehide', handleHide, { once: true });
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) handleHide();
+            }, { once: true });
+
+            // 2. 瞬间拉起邮箱
             window.location.href = "mailto:" + email;
 
-            // 手机端专用：通过计算“时间差”来判断是否成功唤起
+            // 3. 此时等待时间可以从 400ms 直接压缩到 150ms！
+            // 150ms 只是为了给底层系统处理 mailto 留出一眨眼的时间，
+            // 如果成功拉起，上面的事件会在 50-100ms 内触发并锁死 isAppOpening。
             setTimeout(function() {
-                const timeSpent = Date.now() - startTime;
-                
-                // 如果小于 600ms，说明浏览器一直处于前台，邮箱拉起失败（手机没装邮箱）
-                // 如果大于 600ms，说明中途浏览器被切入后台（邮箱成功打开），用户回来后不执行跳转
-                if (timeSpent < 600) {
-                    window.location.href = website;
+                if (!isAppOpening) {
+                    window.location.replace(website); // 使用 replace 替换当前历史记录，跳转速度比 href 更快
                 }
-            }, 400);
+            }, 150);
 
         } else {
-            // === 【电脑端零延迟逻辑】 ===
-            
+            // === 【电脑端：零延迟逻辑保持不变】 ===
+            let hasLeft = false;
+
             window.addEventListener('blur', function() {
                 hasLeft = true;
             }, { once: true });
 
             window.addEventListener('focus', function() {
-                // 电脑端点击取消，立刻秒切官网
-                window.location.href = website;
+                window.location.replace(website);
             }, { once: true });
 
             window.location.href = "mailto:" + email;
 
             setTimeout(function() {
                 if (!hasLeft) {
-                    window.location.href = website;
+                    window.location.replace(website);
                 }
-            }, 500);
+            }, 400);
         }
     </script>
 
